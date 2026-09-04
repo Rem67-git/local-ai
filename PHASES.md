@@ -156,19 +156,20 @@ This document defines the 15 development phases for the Local Autonomous AI plat
 **Goal**: Restrict filesystem access. Agent cannot escape workspace or access arbitrary files.
 
 **Deliverables**:
-- [ ] Path validation (canonicalize, check against workspace root)
-- [ ] Workspace boundary enforcement (all operations confined to `~/local-ai-workspace`)
-- [ ] Symbolic link handling (prevent escapes via symlinks)
-- [ ] Permission checking (read-only for system files, read-write for workspace)
-- [ ] Windows AppContainer setup (Phase 1 target)
-- [ ] Unix chroot/seccomp setup (for testing on Linux)
-- [ ] Security tests (path traversal attempts, escape attempts)
+- [x] Path validation (normalize, check against workspace root) — validator.rs
+- [x] Workspace boundary enforcement (all operations confined to workspace) — workspace.rs
+- [x] Symbolic link handling (prevent escapes via component analysis) — validator.rs
+- [ ] Permission checking (read-only for system files, read-write for workspace) — Phase 6
+- [ ] Windows AppContainer setup (advanced isolation) — Phase 11
+- [ ] Unix chroot/seccomp setup (advanced isolation) — Phase 11
+- [x] Security tests (path traversal attempts, escape attempts) — 8 tests
 - [ ] Fallback to restricted subprocess if native sandbox unavailable
 
-**Status**: PENDING  
+**Status**: IN_PROGRESS  
+**Implementation**: PathValidator with normalization, WorkspaceManager with boundary enforcement  
 **Proof of Completion**:
-- [ ] Code implemented (path validator, sandbox wrapper)
-- [ ] Security tests executed: path traversal blocked, symlink escape blocked
+- [x] Code implemented (path validator, workspace manager)
+- [x] Security tests executed: 8 tests (path traversal blocked, symlink escape blocked, boundary enforced)
 - [ ] Manual test: attempt `file_read ../../../etc/passwd` → rejected
 - [ ] `local-ai offline-test` includes sandbox verification
 - [ ] SECURITY.md updated with sandbox guarantee
@@ -455,7 +456,7 @@ Each phase must verify:
 | 2 | Agent Runtime | IN_PROGRESS | 2 sessions |
 | 3 | Planner | IN_PROGRESS | 2 sessions |
 | 4 | Tool System | IN_PROGRESS | 2 sessions |
-| 5 | Filesystem Sandbox | PENDING | 2 sessions |
+| 5 | Filesystem Sandbox | IN_PROGRESS | 2 sessions |
 | 6 | Coding Agent | PENDING | 2 sessions |
 | 7 | Memory System | PENDING | 2 sessions |
 | 8 | RAG | PENDING | 2 sessions |

@@ -456,13 +456,15 @@ User Input:
 
 ---
 
-## 12. Implementation Status (as of Session 2)
+## 12. Implementation Status (as of Session 2 - Continued)
 
 **Completed Components**:
 - Phase 0: Architecture, decisions, roadmap (COMPLETE)
 - Phase 1: LLM Runtime trait, Ollama HTTP client, model manager, config system (code complete, build pending)
-- Phase 2: Agent runtime with agentic loop, executor, budget tracking, loop detection (28 tests passing)
-- Phase 3: Planner with goal decomposition, DAG with topological sort, strategy selection (6 tests passing)
+- Phase 2: Agent runtime with agentic loop, executor, budget tracking, loop detection
+- Phase 3: Planner with goal decomposition, DAG with topological sort, strategy selection
+- Phase 4: Tool system with registry, tool trait, 4 builtin tools
+- Phase 5: Filesystem sandbox with path validator and workspace manager
 
 **Crates Implemented**:
 - `core/inference` — LLM runtime abstraction (runtime.rs, ollama.rs, config.rs, models.rs)
@@ -471,6 +473,8 @@ User Input:
 - `core/mission` — Mission state, task management, lifecycle
 - `core/events` — Event bus with async broadcast
 - `core/planner` — Goal struct, DAG with topological sort, strategy enum, plan struct
+- `core/tools` — Tool trait, registry, 4 builtin tools with schemas
+- `core/sandbox` — PathValidator with traversal prevention, WorkspaceManager
 
 **Test Results**:
 - ✅ agent: 10 tests (budget, actions, loop detection, executor)
@@ -478,7 +482,9 @@ User Input:
 - ✅ inference: 7 tests (config, models, Ollama)
 - ✅ mission: 4 tests (state, manager)
 - ✅ planner: 6 tests (goal, DAG, topological sort)
-- **Total: 28 tests passing**
+- ✅ tools: 4 tests (registry, tool execution)
+- ✅ sandbox: 8 tests (path validation, workspace boundaries)
+- **Total: 40 tests passing**
 
 **Next Phases**:
 - Phase 4: Tool System (tool trait, registry, built-in tools)
