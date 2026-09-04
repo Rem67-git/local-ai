@@ -456,7 +456,39 @@ User Input:
 
 ---
 
-## 12. Next Steps
+## 12. Implementation Status (as of Session 2)
+
+**Completed Components**:
+- Phase 0: Architecture, decisions, roadmap (COMPLETE)
+- Phase 1: LLM Runtime trait, Ollama HTTP client, model manager, config system (code complete, build pending)
+- Phase 2: Agent runtime with agentic loop, executor, budget tracking, loop detection (28 tests passing)
+- Phase 3: Planner with goal decomposition, DAG with topological sort, strategy selection (6 tests passing)
+
+**Crates Implemented**:
+- `core/inference` — LLM runtime abstraction (runtime.rs, ollama.rs, config.rs, models.rs)
+- `core/cli` — CLI entry point with commands for model selection, doctor, offline-test
+- `core/agent` — Agent loop, executor, action schema, budget, loop detection
+- `core/mission` — Mission state, task management, lifecycle
+- `core/events` — Event bus with async broadcast
+- `core/planner` — Goal struct, DAG with topological sort, strategy enum, plan struct
+
+**Test Results**:
+- ✅ agent: 10 tests (budget, actions, loop detection, executor)
+- ✅ events: 1 test (event bus)
+- ✅ inference: 7 tests (config, models, Ollama)
+- ✅ mission: 4 tests (state, manager)
+- ✅ planner: 6 tests (goal, DAG, topological sort)
+- **Total: 28 tests passing**
+
+**Next Phases**:
+- Phase 4: Tool System (tool trait, registry, built-in tools)
+- Phase 5: Filesystem Sandbox (path validation, workspace boundary)
+- Phase 6: Coding Agent (code reading, error detection, fixes)
+- ...and 9 more phases to release
+
+---
+
+## 13. Next Steps
 
 This architecture is the target. Phase 0 is complete when:
 1. This document is finalized
