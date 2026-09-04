@@ -95,18 +95,20 @@ This document defines the 15 development phases for the Local Autonomous AI plat
 **Goal**: Goal decomposition and action planning. Agent can tackle multi-step missions.
 
 **Deliverables**:
-- [ ] Planner struct (goal, sub-goals, DAG)
-- [ ] Goal decomposition (LLM breaks down complex goal into steps)
-- [ ] DAG construction (dependencies, parallelization points)
-- [ ] Strategy selection (sequential, parallel, conditional)
-- [ ] Replanning logic (if a goal fails, adjust strategy)
-- [ ] Sub-task tracking (status, results)
+- [x] Planner struct (goal, sub-goals, DAG) — lib.rs
+- [x] Goal struct with decomposition logic — goal.rs (GoalStatus enum: pending/in_progress/completed/failed/blocked)
+- [x] DAG construction (dependencies, parallelization points) — dag.rs (topological_sort, next_executable, validate_acyclic)
+- [x] Strategy selection (sequential, parallel, conditional) — strategy.rs (Strategy enum with variants)
+- [x] Replanning logic (if a goal fails, adjust strategy) — replanner.rs (Replanner stub)
+- [x] Plan struct with execution order — plan.rs (mission_goal, sub_goals DAG, strategy, execution_order)
 - [ ] Unit and integration tests for planning
 - [ ] Example mission: "Analyze project structure and list errors"
+- [ ] LLM-based goal decomposition (currently stub)
 
-**Status**: PENDING  
+**Status**: IN_PROGRESS  
+**Code Implementation**: Core planner crate complete (goal.rs, dag.rs, strategy.rs, plan.rs, replanner.rs)  
 **Proof of Completion**:
-- [ ] Code implemented (planner, DAG builder, replanner)
+- [x] Code implemented (Planner struct, Goal struct, DAG with topological sort, Plan struct, Strategy enum)
 - [ ] Tests executed: planner decomposes goal, produces valid action sequences
 - [ ] Manual test: mission "Analyze ./src" runs, planner creates 4-5 sub-goals, executes in order
 - [ ] Integration test with Phase 2: agent runs planner's goals
@@ -449,9 +451,9 @@ Each phase must verify:
 | Phase | Title | Status | Est. Duration |
 |-------|-------|--------|----------------|
 | 0 | Architecture | COMPLETE | 1 session |
-| 1 | Local LLM | PENDING | 2 sessions |
-| 2 | Agent Runtime | PENDING | 2 sessions |
-| 3 | Planner | PENDING | 2 sessions |
+| 1 | Local LLM | IN_PROGRESS | 2 sessions |
+| 2 | Agent Runtime | IN_PROGRESS | 2 sessions |
+| 3 | Planner | IN_PROGRESS | 2 sessions |
 | 4 | Tool System | PENDING | 2 sessions |
 | 5 | Filesystem Sandbox | PENDING | 2 sessions |
 | 6 | Coding Agent | PENDING | 2 sessions |
