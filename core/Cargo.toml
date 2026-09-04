@@ -1,5 +1,5 @@
 [workspace]
-members = ["inference", "cli", "agent", "mission", "events", "planner"]
+members = ["inference", "cli", "agent", "mission", "events", "planner", "tools"]
 resolver = "2"
 
 [workspace.package]
