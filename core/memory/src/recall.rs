@@ -1,5 +1,4 @@
 use crate::memory_entry::MemoryEntry;
-use crate::error::MemoryResult;
 
 pub struct RecallEngine;
 
@@ -44,7 +43,7 @@ impl RecallEngine {
     }
 
     pub fn find_similar(entries: &[MemoryEntry], query: &str, top_k: usize) -> Vec<MemoryEntry> {
-        let mut matches = Self::filter_by_similarity(entries, query);
+        let matches = Self::filter_by_similarity(entries, query);
         let mut ranked = Self::rank_by_relevance(&matches);
         ranked.truncate(top_k);
         ranked
