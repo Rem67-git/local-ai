@@ -1,11 +1,14 @@
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::Value;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum ActionError {
     #[error("Invalid JSON: {0}")]
     InvalidJson(#[from] serde_json::Error),
+
+    #[error("Parse error: {0}")]
+    ParseError(String),
 
     #[error("Missing required field: {0}")]
     MissingField(String),
@@ -37,7 +40,7 @@ impl StructuredAction {
     pub fn from_value(value: &Value) -> ActionResult<Self> {
         let obj = value
             .as_object()
-            .ok_or_else(|| ActionError::InvalidJson("Expected object".to_string()))?;
+            .ok_or_else(|| ActionError::ParseError("Expected object".to_string()))?;
 
         let action_type = obj
             .get("action_type")

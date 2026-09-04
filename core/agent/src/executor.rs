@@ -39,11 +39,18 @@ impl Executor {
     }
 
     pub async fn execute(&self, action: &StructuredAction) -> ExecutorResult<ObservationResult> {
+        let start = Instant::now();
+
         if !self.available_tools.contains(&action.tool) {
-            return Err(ExecutorError::ToolNotFound(action.tool.clone()));
+            let elapsed = start.elapsed();
+            return Ok(ObservationResult::error(
+                action.tool.clone(),
+                action.args.clone(),
+                format!("Tool not found: {}", action.tool),
+                elapsed,
+            ));
         }
 
-        let start = Instant::now();
         let result = self.execute_tool(&action.tool, &action.args).await;
         let elapsed = start.elapsed();
 

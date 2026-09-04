@@ -2,7 +2,6 @@ use crate::actions::StructuredAction;
 use crate::budget::{Budget, BudgetTracker};
 use crate::executor::Executor;
 use crate::loop_detection::LoopDetector;
-use crate::observations::ObservationResult;
 use inference::LLMRuntime;
 use log::{info, warn};
 use mission::{MissionState, MissionStatus};

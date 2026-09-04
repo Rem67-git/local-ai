@@ -1,5 +1,4 @@
-use crate::config::{Config, ConfigError, ConfigResult};
-use crate::ollama::ModelInfo;
+use crate::config::{Config, ConfigResult};
 use std::fs;
 use std::path::PathBuf;
 

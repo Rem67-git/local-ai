@@ -1,7 +1,9 @@
 use crate::goal::Goal;
 use crate::PlannerResult;
-use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, VecDeque};
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DAG {
     pub goals: HashMap<String, Goal>,
     pub edges: Vec<(String, String)>,
@@ -25,7 +27,37 @@ impl DAG {
     }
 
     pub fn topological_sort(&self) -> Vec<String> {
-        self.goals.keys().cloned().collect()
+        // Kahn's algorithm for topological sort
+        let mut in_degree = HashMap::new();
+        for goal_id in self.goals.keys() {
+            in_degree.insert(goal_id.clone(), 0);
+        }
+
+        for (_parent, child) in &self.edges {
+            *in_degree.get_mut(child).unwrap_or(&mut 0) += 1;
+        }
+
+        let mut queue: VecDeque<String> = self.goals
+            .keys()
+            .filter(|id| in_degree[*id] == 0)
+            .cloned()
+            .collect();
+
+        let mut result = Vec::new();
+        while let Some(node) = queue.pop_front() {
+            result.push(node.clone());
+
+            for (_parent, child) in &self.edges {
+                if _parent == &node {
+                    in_degree.insert(child.clone(), in_degree[child] - 1);
+                    if in_degree[child] == 0 {
+                        queue.push_back(child.clone());
+                    }
+                }
+            }
+        }
+
+        result
     }
 
     pub fn get_blocking_goals(&self, _goal_id: &str) -> Vec<String> {

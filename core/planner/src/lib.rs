@@ -4,6 +4,9 @@ pub mod plan;
 pub mod replanner;
 pub mod strategy;
 
+#[cfg(test)]
+mod tests;
+
 pub use dag::DAG;
 pub use goal::{Goal, GoalStatus};
 pub use plan::Plan;
@@ -11,7 +14,6 @@ pub use strategy::Strategy;
 
 use inference::LLMRuntime;
 use log::info;
-use std::sync::Arc;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
