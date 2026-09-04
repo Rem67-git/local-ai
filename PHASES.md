@@ -65,17 +65,19 @@ This document defines the 15 development phases for the Local Autonomous AI plat
 **Goal**: Core agentic loop: observe, think, plan, act. Agent can execute structured tool calls.
 
 **Deliverables**:
-- [ ] Agent struct (state, context, budget)
-- [ ] Observation system (LLM receives current state + context)
-- [ ] Action generation (LLM outputs structured JSON)
-- [ ] Action executor (routes to tool, captures result)
-- [ ] Budget tracking (tokens, actions, time limits)
-- [ ] Loop detection (repeated actions, stalled progress)
-- [ ] Error handling (parse errors, tool failures, timeouts)
-- [ ] Unit and integration tests for agent loop
-- [ ] `local-ai doctor` command (verify agent runtime is responsive)
+- [x] Agent struct (state, context, budget) — runtime.rs
+- [x] Observation system (LLM receives current state + context) — build_context() in runtime
+- [x] Action generation (LLM outputs structured JSON) — StructuredAction.from_json()
+- [x] Action executor (routes to tool, captures result) — executor.rs
+- [x] Budget tracking (tokens, actions, time limits) — budget.rs
+- [x] Loop detection (repeated actions, stalled progress) — loop_detection.rs
+- [x] Error handling (parse errors, tool failures, timeouts) — comprehensive error types
+- [x] Unit and integration tests for agent loop — tests in each module
+- [ ] Integration test: end-to-end mission execution (LLM→action→execution→observation)
+- [ ] `local-ai doctor` command update (verify agent runtime is responsive)
 
-**Status**: PENDING  
+**Status**: IN_PROGRESS  
+**Implementation**: 3 crates (agent, mission, events) with core loop, state management, and event bus  
 **Proof of Completion**:
 - [ ] Code implemented (agent loop, executor, budget)
 - [ ] Tests executed: loop runs, produces actions, catches errors
