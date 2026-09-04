@@ -34,6 +34,12 @@ enum Commands {
 
     /// Run inference with a prompt
     Infer { prompt: String },
+
+    /// Run a mission with a goal
+    RunMission { goal: String },
+
+    /// List mission history
+    ListMissions,
 }
 
 #[tokio::main]
@@ -48,6 +54,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Doctor => commands::doctor().await?,
         Commands::OfflineTest => commands::offline_test().await?,
         Commands::Infer { prompt } => commands::infer(&prompt).await?,
+        Commands::RunMission { goal } => commands::run_mission(&goal).await?,
+        Commands::ListMissions => commands::list_missions().await?,
     }
 
     Ok(())

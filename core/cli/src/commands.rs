@@ -173,3 +173,36 @@ pub async fn infer(prompt: &str) -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
+pub async fn run_mission(goal: &str) -> Result<(), Box<dyn std::error::Error>> {
+    println!("\n=== Starting Mission ===");
+    println!("Goal: {}", goal);
+    println!();
+
+    println!("✅ Mission framework ready (Phase 2)");
+    println!("Note: Full mission execution requires Phase 4 (Tool System) implementation");
+    println!();
+    println!("To run missions with real tools:");
+    println!("  1. Complete Phase 3: Planner");
+    println!("  2. Complete Phase 4: Tool System");
+    println!("  3. Integrate with sandbox (Phase 5)");
+    println!();
+    println!("Current status: Mission state tracking, agent loop, and event bus implemented.");
+
+    Ok(())
+}
+
+pub async fn list_missions() -> Result<(), Box<dyn std::error::Error>> {
+    println!("\n=== Mission History ===");
+    println!("Note: Mission persistence requires database integration (Phase 7+)");
+    println!();
+    println!("Current capabilities:");
+    println!("  ✅ Mission state creation and tracking");
+    println!("  ✅ Task status machine (pending→complete)");
+    println!("  ✅ Observation recording");
+    println!("  ✅ Error handling");
+    println!();
+    println!("Pending: Database persistence, mission resumption, history queries");
+
+    Ok(())
+}
