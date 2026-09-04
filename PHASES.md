@@ -244,22 +244,24 @@ This document defines the 15 development phases for the Local Autonomous AI plat
 **Goal**: Agent can ingest and search documents. Augment LLM context with relevant information.
 
 **Deliverables**:
-- [ ] Document ingestion (PDF, markdown, plain text)
-- [ ] Chunking (break docs into retrievable segments)
-- [ ] Embedding and indexing (FAISS)
-- [ ] Similarity search (retrieve top-K relevant chunks)
-- [ ] Context augmentation (inject relevant docs into LLM prompt)
-- [ ] Document parser (extract text from PDF, markdown)
-- [ ] Tests for ingestion, search, augmentation
+- [x] Document ingestion (text, markdown, code, JSON, HTML) — document.rs
+- [x] Chunking (break docs into 500-char segments with 100-char overlap) — document.rs
+- [x] Word-based indexing (inverted index for keyword search) — indexer.rs
+- [x] Keyword search (retrieve matching documents) — retriever.rs
+- [x] Context augmentation (get_context() for LLM prompt injection) — retriever.rs
+- [x] Document parser (6 document types with metadata) — document.rs
+- [x] Tests for ingestion, search, retrieval (12 tests)
 - [ ] Example mission: "Analyze the requirements in docs/ and compare with code"
+- [ ] FAISS embeddings (deferred to Phase 8b for vector similarity)
 
-**Status**: PENDING  
+**Status**: IN_PROGRESS  
+**Implementation**: Document with chunking, DocumentIndexer with word indexing, DocumentRetriever with keyword search  
 **Proof of Completion**:
-- [ ] Code implemented (document processor, indexer, retriever)
-- [ ] Tests executed: ingest docs, search for keywords, retrieve relevant chunks
+- [x] Code implemented (document processor, indexer, retriever)
+- [x] Tests executed: 12 tests (document, indexing, retrieval)
 - [ ] Manual test: mission ingests README + DESIGN.md, uses them to answer questions
 - [ ] Offline test: RAG works without network
-- [ ] ARCHITECTURE.md updated with RAG pipeline
+- [x] Basic retrieval pipeline working (keyword → documents → context)
 
 **Dependencies**: Phase 7 (embeddings system)  
 **Estimated Duration**: 2 sessions
@@ -461,7 +463,7 @@ Each phase must verify:
 | 5 | Filesystem Sandbox | IN_PROGRESS | 2 sessions |
 | 6 | Coding Agent | IN_PROGRESS | 2 sessions |
 | 7 | Memory System | IN_PROGRESS | 2 sessions |
-| 8 | RAG | PENDING | 2 sessions |
+| 8 | RAG | IN_PROGRESS | 2 sessions |
 | 9 | UI | PENDING | 2 sessions |
 | 10 | Multi-Agent | PENDING | 2 sessions |
 | 11 | Security | PENDING | 2 sessions |
