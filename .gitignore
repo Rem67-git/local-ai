@@ -1,0 +1,88 @@
+# Rust build artifacts
+/target/
+Cargo.lock
+*.rlib
+*.rmeta
+
+# Node build artifacts
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+pnpm-lock.yaml
+dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+dist/
+build/
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.editorconfig
+*.code-workspace
+
+# Local LLM models (large files, user-specific)
+inference/models/
+
+# User configuration and data
+~/.local-ai/
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.local
+credentials.json
+secrets.json
+
+# Tauri build artifacts
+apps/desktop/src-tauri/target/
+apps/desktop/dist/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+temp/
+
+# Database files
+*.db-shm
+*.db-wal
+
+# Vector indices (user-specific)
+*.faiss
+*.pkl
+
+# Logs (but keep schema)
+*.log
+logs/
+
+# macOS
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Misc
+.cache/
+.bak
+*.bak
+patch/
+*.patch

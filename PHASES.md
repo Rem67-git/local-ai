@@ -1,0 +1,475 @@
+# PHASES — Development Roadmap and Progress Tracking
+
+This document defines the 15 development phases for the Local Autonomous AI platform. Each phase has:
+- **Goal**: what should be done
+- **Status**: PENDING | IN_PROGRESS | BLOCKED | COMPLETE
+- **Proof of Completion**: checklist from CLAUDE.md section 8
+
+---
+
+## Phase 0: Architecture & Documentation ✏️
+
+**Goal**: Establish architecture, technology decisions, and development roadmap. Create foundational documentation.
+
+**Deliverables**:
+- [ ] ARCHITECTURE.md — target architecture, component diagram, directory structure, data flow
+- [ ] DECISIONS.md — technology choices with alternatives and rationale
+- [ ] PHASES.md (this file) — 15 phases defined, initial status PENDING
+- [ ] README.md — user-facing overview, quick start guide
+- [ ] .gitignore — exclude models, build artifacts, user data, secrets
+- [ ] Git repo initialized
+
+**Status**: IN_PROGRESS  
+**Proof of Completion**:
+- [ ] All four docs exist and are readable
+- [ ] Architecture does not contradict CLAUDE.md
+- [ ] Technology choices are justified
+- [ ] 15 phases listed and understood
+- [ ] README explains project purpose to new developers
+- [ ] Git repo initialized with clean history
+
+**Estimated Duration**: 1 session
+
+---
+
+## Phase 1: Local LLM Runtime 🧠
+
+**Goal**: Integrate local LLM inference. User can select and run a model without cloud API calls.
+
+**Deliverables**:
+- [ ] llama.cpp Rust bindings (or HTTP wrapper)
+- [ ] Ollama HTTP client
+- [ ] Abstraction layer (`LLMRuntime` trait)
+- [ ] Model download manager (auto-fetch model from HuggingFace or similar)
+- [ ] Model caching (avoid re-downloading)
+- [ ] Configuration (select default model, set context window, temperature, etc.)
+- [ ] CLI command: `local-ai list-models`, `local-ai select-model <model_id>`
+- [ ] Integration tests for LLM inference
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (model loader, inference wrapper, config)
+- [ ] Tests executed: unit tests pass, inference returns token sequences
+- [ ] Manual test: user runs `local-ai select-model` and downloads a model (e.g., Mistral 7B)
+- [ ] Offline verification: `local-ai offline-test` runs inference without network
+- [ ] Docs updated (ARCHITECTURE.md notes which models supported)
+
+**Dependencies**: None (Phase 0 must be complete)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 2: Agent Runtime 🤖
+
+**Goal**: Core agentic loop: observe, think, plan, act. Agent can execute structured tool calls.
+
+**Deliverables**:
+- [ ] Agent struct (state, context, budget)
+- [ ] Observation system (LLM receives current state + context)
+- [ ] Action generation (LLM outputs structured JSON)
+- [ ] Action executor (routes to tool, captures result)
+- [ ] Budget tracking (tokens, actions, time limits)
+- [ ] Loop detection (repeated actions, stalled progress)
+- [ ] Error handling (parse errors, tool failures, timeouts)
+- [ ] Unit and integration tests for agent loop
+- [ ] `local-ai doctor` command (verify agent runtime is responsive)
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (agent loop, executor, budget)
+- [ ] Tests executed: loop runs, produces actions, catches errors
+- [ ] Manual test: user provides simple goal ("List files in current dir"), agent runs 3-5 iterations and completes
+- [ ] `local-ai doctor` runs and reports "agent runtime OK"
+- [ ] ARCHITECTURE.md updated with loop details, budget enforcement
+
+**Dependencies**: Phase 1 (LLM must respond)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 3: Planner 📋
+
+**Goal**: Goal decomposition and action planning. Agent can tackle multi-step missions.
+
+**Deliverables**:
+- [ ] Planner struct (goal, sub-goals, DAG)
+- [ ] Goal decomposition (LLM breaks down complex goal into steps)
+- [ ] DAG construction (dependencies, parallelization points)
+- [ ] Strategy selection (sequential, parallel, conditional)
+- [ ] Replanning logic (if a goal fails, adjust strategy)
+- [ ] Sub-task tracking (status, results)
+- [ ] Unit and integration tests for planning
+- [ ] Example mission: "Analyze project structure and list errors"
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (planner, DAG builder, replanner)
+- [ ] Tests executed: planner decomposes goal, produces valid action sequences
+- [ ] Manual test: mission "Analyze ./src" runs, planner creates 4-5 sub-goals, executes in order
+- [ ] Integration test with Phase 2: agent runs planner's goals
+- [ ] ARCHITECTURE.md updated with planner details
+
+**Dependencies**: Phase 2 (agent must execute actions)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 4: Tool System 🔧
+
+**Goal**: Build tool catalog. Agent can invoke filesystem, shell, code parsing, etc.
+
+**Deliverables**:
+- [ ] Tool trait (name, input schema, output schema, execution function)
+- [ ] Tool registry (catalog of available tools)
+- [ ] Tool router (matches action to tool)
+- [ ] Built-in tools:
+  - [ ] `file_read` — read file contents (with path validation)
+  - [ ] `file_write` — write to file (within workspace)
+  - [ ] `file_list` — list directory contents
+  - [ ] `shell_exec` — run shell command (restricted)
+  - [ ] `code_parse` — parse code structure (AST, errors)
+  - [ ] `code_modify` — apply edits to code
+- [ ] JSON schema validation for tool inputs
+- [ ] Error messages for invalid inputs
+- [ ] Unit tests for each tool
+- [ ] Integration tests (agent → tool → result)
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (tool trait, registry, built-in tools)
+- [ ] Tests executed: each tool handles valid and invalid inputs
+- [ ] Manual test: agent calls file_read, file_list, code_parse and gets results
+- [ ] ARCHITECTURE.md updated with tool catalog
+
+**Dependencies**: Phase 2 (agent routes to tools)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 5: Filesystem Sandbox 🔒
+
+**Goal**: Restrict filesystem access. Agent cannot escape workspace or access arbitrary files.
+
+**Deliverables**:
+- [ ] Path validation (canonicalize, check against workspace root)
+- [ ] Workspace boundary enforcement (all operations confined to `~/local-ai-workspace`)
+- [ ] Symbolic link handling (prevent escapes via symlinks)
+- [ ] Permission checking (read-only for system files, read-write for workspace)
+- [ ] Windows AppContainer setup (Phase 1 target)
+- [ ] Unix chroot/seccomp setup (for testing on Linux)
+- [ ] Security tests (path traversal attempts, escape attempts)
+- [ ] Fallback to restricted subprocess if native sandbox unavailable
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (path validator, sandbox wrapper)
+- [ ] Security tests executed: path traversal blocked, symlink escape blocked
+- [ ] Manual test: attempt `file_read ../../../etc/passwd` → rejected
+- [ ] `local-ai offline-test` includes sandbox verification
+- [ ] SECURITY.md updated with sandbox guarantee
+
+**Dependencies**: Phase 4 (tools that perform filesystem operations)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 6: Coding Agent 🖊️
+
+**Goal**: Agent can read, analyze, and modify code. Can detect and fix basic errors.
+
+**Deliverables**:
+- [ ] Code parser (syntax tree extraction)
+- [ ] Error detection (compilation, linting, type errors)
+- [ ] Code modification (apply edits, maintain formatting)
+- [ ] Test running (execute unit tests, parse results)
+- [ ] Diff generation (show what changed)
+- [ ] Integration with code tools from Phase 4
+- [ ] Example mission: "Fix syntax errors in main.py"
+- [ ] Tests for parsing, editing, test-running
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (parser, editor, test runner)
+- [ ] Tests executed: parse code, detect errors, apply fixes
+- [ ] Manual test: mission "Analyze src/main.py and list errors" succeeds
+- [ ] Manual test: mission "Fix the broken test in test_utils.py" modifies file and re-runs tests
+- [ ] ARCHITECTURE.md updated with coding agent details
+
+**Dependencies**: Phase 5 (sandbox must be enforced)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 7: Memory System 💾
+
+**Goal**: Agent can remember past interactions, retrieve relevant context, and learn patterns.
+
+**Deliverables**:
+- [ ] Memory types:
+  - [ ] Context history (recent decisions, errors, results)
+  - [ ] Semantic index (embeddings + vector search)
+  - [ ] Long-term knowledge (patterns, tool behaviors)
+  - [ ] Tool observations (cumulative tool error modes)
+  - [ ] Checkpoints (mission resume points)
+- [ ] Embedding model selection and download
+- [ ] Vector store setup (FAISS)
+- [ ] Recall logic (retrieve similar past contexts)
+- [ ] Pruning (remove stale entries)
+- [ ] Persistence (SQLite schema for memory)
+- [ ] Tests for storage, recall, pruning
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (memory types, storage, recall)
+- [ ] Tests executed: store context, retrieve similar entries, prune old entries
+- [ ] Manual test: agent recalls similar past missions and applies learned strategies
+- [ ] Offline test: memory persists without network
+- [ ] ARCHITECTURE.md updated with memory details
+
+**Dependencies**: Phase 4 (tools generate memories), Phase 5 (storage)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 8: Retrieval-Augmented Generation (RAG) 📚
+
+**Goal**: Agent can ingest and search documents. Augment LLM context with relevant information.
+
+**Deliverables**:
+- [ ] Document ingestion (PDF, markdown, plain text)
+- [ ] Chunking (break docs into retrievable segments)
+- [ ] Embedding and indexing (FAISS)
+- [ ] Similarity search (retrieve top-K relevant chunks)
+- [ ] Context augmentation (inject relevant docs into LLM prompt)
+- [ ] Document parser (extract text from PDF, markdown)
+- [ ] Tests for ingestion, search, augmentation
+- [ ] Example mission: "Analyze the requirements in docs/ and compare with code"
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (document processor, indexer, retriever)
+- [ ] Tests executed: ingest docs, search for keywords, retrieve relevant chunks
+- [ ] Manual test: mission ingests README + DESIGN.md, uses them to answer questions
+- [ ] Offline test: RAG works without network
+- [ ] ARCHITECTURE.md updated with RAG pipeline
+
+**Dependencies**: Phase 7 (embeddings system)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 9: User Interface 🖥️
+
+**Goal**: Desktop UI for missions, logs, and real-time feedback. User can launch missions and monitor progress.
+
+**Deliverables**:
+- [ ] Tauri window setup
+- [ ] React components:
+  - [ ] Mission input form (goal, workspace, parameters)
+  - [ ] Mission status display (progress, current action)
+  - [ ] Logs viewer (structured JSON logs, sortable)
+  - [ ] Memory/history inspector (past missions, learned patterns)
+  - [ ] Settings panel (model selection, policy configuration)
+- [ ] Real-time updates (mission progress, logs)
+- [ ] IPC from React to Rust backend
+- [ ] Styling and layout
+- [ ] Unit tests for components
+- [ ] Manual testing on Windows 11
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (Tauri + React components)
+- [ ] Tests executed: components render, IPC works
+- [ ] Manual test: user launches mission via UI, sees live logs and progress
+- [ ] UI works offline (no external fonts, CDNs, etc.)
+- [ ] ARCHITECTURE.md includes UI component diagram
+
+**Dependencies**: Phase 6 (agent must be complete for end-to-end demo)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 10: Multi-Agent Supervision 👥
+
+**Goal**: Multiple specialized agents (Planner, Coder, Tester, Analyst, Reviewer) coordinated by Supervisor.
+
+**Deliverables**:
+- [ ] Supervisor agent (chooses which specialist to delegate to)
+- [ ] Specialist agent templates (each with own tools and role)
+- [ ] Delegation protocol (supervisor → specialist → supervisor)
+- [ ] Role-based tool access (coder gets code tools, analyst gets doc tools)
+- [ ] Communication channel (specialists can query each other)
+- [ ] Integration tests (multi-agent workflows)
+- [ ] Example mission: "Complex project analysis" → Analyst + Coder + Tester + Reviewer
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Code implemented (supervisor, specialist agents, delegation)
+- [ ] Tests executed: supervisor routes correctly, specialists complete tasks
+- [ ] Manual test: complex mission that benefits from multiple specialists succeeds
+- [ ] ARCHITECTURE.md updated with multi-agent pattern
+
+**Dependencies**: Phases 1-9 (all components must be mature)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 11: Security Hardening 🔐
+
+**Goal**: Threat model implementation, permission enforcement, loop detection, and security testing.
+
+**Deliverables**:
+- [ ] Threat model (from THREAT_MODEL.md):
+  - [ ] Prompt injection (docs/code with false instructions)
+  - [ ] Malicious tool output
+  - [ ] Path traversal and filesystem escape
+  - [ ] Network exfiltration
+  - [ ] Resource exhaustion
+  - [ ] Privilege escalation
+  - [ ] Agent loops and hallucinations
+- [ ] Security tests for each threat (in `tests/security/`)
+- [ ] Policy engine hardening (edge cases, denial rules)
+- [ ] Loop detection tuning (sensitivity, escape strategies)
+- [ ] Budget enforcement (no agent runs forever)
+- [ ] Permission model (user controls agent autonomy level)
+- [ ] Audit logging (detailed action traces for review)
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Security tests executed: all threats from THREAT_MODEL.md tested
+- [ ] Manual verification: attempt each threat type, all blocked
+- [ ] Audit logs reviewed for completeness
+- [ ] THREAT_MODEL.md and SECURITY.md updated with test results
+
+**Dependencies**: Phases 1-10 (all prior phases must be complete)  
+**Estimated Duration**: 2 sessions
+
+---
+
+## Phase 12: Offline Packaging 📦
+
+**Goal**: Distribute self-contained executable bundle with LLM, models, database schema, no external dependencies.
+
+**Deliverables**:
+- [ ] Build script (compile Rust, bundle React, download models)
+- [ ] Model bundling (include quantized model in distribution)
+- [ ] Database bundling (SQLite schema pre-initialized)
+- [ ] Dependency vendoring (all Rust/Node deps included)
+- [ ] Executable packaging (native binary on Windows)
+- [ ] Installation guide (first-run setup)
+- [ ] `local-ai doctor` verification
+- [ ] `local-ai offline-test` proof of offline capability
+- [ ] Release checklist
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Build script works end-to-end
+- [ ] Standalone executable runs on Windows 11 (no pre-installed runtimes)
+- [ ] `local-ai offline-test` succeeds with network disabled
+- [ ] All components verified offline
+- [ ] Installer created and tested
+
+**Dependencies**: Phases 1-11  
+**Estimated Duration**: 1 session
+
+---
+
+## Phase 13: Performance Optimization ⚡
+
+**Goal**: Profile, optimize, and scale. Agent responds quickly, handles large missions efficiently.
+
+**Deliverables**:
+- [ ] Profiling (identify bottlenecks: LLM latency, tool overhead, memory)
+- [ ] Token optimization (shorter prompts without losing context)
+- [ ] Tool caching (memoize common operations)
+- [ ] Parallel tool execution (where possible)
+- [ ] Database indexing (fast memory queries)
+- [ ] Large-scale testing (100-task missions)
+- [ ] Benchmarks (latency, throughput, memory usage)
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] Profiling data collected and analyzed
+- [ ] Bottlenecks identified and addressed
+- [ ] Benchmarks show improvement (before/after)
+- [ ] Large-scale test (100-task mission) completes in reasonable time
+- [ ] DECISIONS.md updated with performance-related choices
+
+**Dependencies**: Phases 1-12  
+**Estimated Duration**: 1 session
+
+---
+
+## Phase 14: Release 🚀
+
+**Goal**: Documentation, packaging, distribution, user support.
+
+**Deliverables**:
+- [ ] README.md — comprehensive user guide
+- [ ] INSTALLATION.md — platform-specific install instructions
+- [ ] USAGE.md — mission definition, examples, troubleshooting
+- [ ] API.md — developer documentation (if extending with plugins)
+- [ ] LICENSE.txt and LICENSES.txt (attribution for all dependencies)
+- [ ] Changelog — version history
+- [ ] Release binary (Windows exe, + Mac/.dmg and Linux/.AppImage if applicable)
+- [ ] Announcement (blog post, social, etc.)
+- [ ] Version number (semantic versioning)
+
+**Status**: PENDING  
+**Proof of Completion**:
+- [ ] All documentation written and reviewed
+- [ ] Release binary tested on target platforms
+- [ ] Install, run, and complete a mission from scratch (fresh user simulation)
+- [ ] Support channels ready (issue tracker, email, etc.)
+
+**Dependencies**: Phases 1-13  
+**Estimated Duration**: 1 session
+
+---
+
+## Proof of Completion Template
+
+Each phase must verify:
+
+✅ **Code**: Implementation complete, code is readable and modular  
+✅ **Tests**: Tests executed in this session, output pasted or summarized  
+✅ **Security**: Relevant threat model tests run (or documented why N/A)  
+✅ **Offline**: `local-ai offline-test` passes (or documented why N/A)  
+✅ **Docs**: ARCHITECTURE.md, SECURITY.md, DECISIONS.md, PHASES.md updated  
+
+**Never** claim a phase is complete without evidence. If a verification couldn't be done (tool missing, env incompatible), state explicitly rather than omit.
+
+---
+
+## Phase Status Summary
+
+| Phase | Title | Status | Est. Duration |
+|-------|-------|--------|----------------|
+| 0 | Architecture | IN_PROGRESS | 1 session |
+| 1 | Local LLM | PENDING | 2 sessions |
+| 2 | Agent Runtime | PENDING | 2 sessions |
+| 3 | Planner | PENDING | 2 sessions |
+| 4 | Tool System | PENDING | 2 sessions |
+| 5 | Filesystem Sandbox | PENDING | 2 sessions |
+| 6 | Coding Agent | PENDING | 2 sessions |
+| 7 | Memory System | PENDING | 2 sessions |
+| 8 | RAG | PENDING | 2 sessions |
+| 9 | UI | PENDING | 2 sessions |
+| 10 | Multi-Agent | PENDING | 2 sessions |
+| 11 | Security | PENDING | 2 sessions |
+| 12 | Packaging | PENDING | 1 session |
+| 13 | Performance | PENDING | 1 session |
+| 14 | Release | PENDING | 1 session |
+
+**Total estimated duration**: ~30 sessions (assuming 8-hour days, ~4 weeks)
+
+---
+
+## Progress Notes
+
+- Phase 0 completion is **blocking** — all decisions must be finalized before Phase 1 begins.
+- Phases 1-9 form the MVP (end-to-end mission execution).
+- Phases 10-11 add sophistication (multi-agent, hardening).
+- Phases 12-14 are production readiness (packaging, performance, release).
+- Any phase can be marked **BLOCKED** if dependencies aren't met or blockers arise.
+- Blocked phases are unblocked by fixing the root cause (usually a prior phase delay).
