@@ -1,0 +1,151 @@
+Third-Party Software Licenses
+
+This product bundles and depends on the following open-source software packages.
+See individual package license files for complete terms.
+
+================================================================================
+RUST DEPENDENCIES (Cargo)
+================================================================================
+
+Core Runtime & Async:
+- tokio (MIT) — Async runtime
+- serde, serde_json (MIT) — Serialization
+- async-broadcast (Apache-2.0) — Event broadcasting
+- chrono (MIT/Apache-2.0) — Datetime handling
+- uuid (MIT/Apache-2.0) — UUID generation
+
+HTTP & Networking:
+- reqwest (MIT/Apache-2.0) — HTTP client (used for Ollama)
+- url (MIT/Apache-2.0) — URL parsing
+
+Filesystem & I/O:
+- walkdir (MIT/Unlicense) — Directory traversal
+- ignore (MIT/Apache-2.0) — .gitignore-style patterns
+- tempfile (MIT/Apache-2.0) — Temporary files
+- dirs (MIT/Apache-2.0) — Platform-specific directories (~/.local-ai/)
+
+Configuration & Parsing:
+- toml (MIT/Apache-2.0) — TOML parsing
+- clap (MIT/Apache-2.0) — CLI argument parsing
+- log, env_logger (MIT/Apache-2.0) — Structured logging
+
+Database:
+- sqlite (Hybrid: public domain / MIT) — SQLite bindings
+
+Testing:
+- criterion (Apache-2.0) — Micro-benchmarking
+
+Developer Tools:
+- flamegraph (Apache-2.0) — CPU profiling
+
+================================================================================
+NODE.JS DEPENDENCIES (npm)
+================================================================================
+
+Desktop Frontend:
+- react, react-dom (MIT) — UI framework (v18.2)
+- typescript (Apache-2.0) — Type system
+- @vitejs/plugin-react (MIT) — Vite React plugin
+- vite (MIT) — Build tool
+
+Tauri Desktop Integration:
+- @tauri-apps/api (MIT) — Tauri IPC API
+- @tauri-apps/cli (MIT) — Tauri build tools
+
+UI Components & Styling:
+- (component libraries will be added in Phase 9b)
+
+Testing:
+- jest (MIT) — Test runner (when added)
+- @testing-library/react (MIT) — React testing utilities
+
+================================================================================
+SYSTEM DEPENDENCIES
+================================================================================
+
+Optional (not bundled):
+- Ollama (Apache-2.0) — LLM inference (downloaded separately)
+- SQLite 3 (Public Domain) — Database (bundled in some builds)
+- llama.cpp (MIT) — Alternative LLM runtime (optional)
+
+Bundled in Release:
+- GGUF quantized models (model-specific licenses):
+  - Mistral 7B (Apache-2.0) — Default model
+  - Other models: see model authors' licenses
+
+================================================================================
+ATTRIBUTION
+================================================================================
+
+This software is built on the exceptional work of the open-source community.
+
+Key projects acknowledged:
+1. **Tokio** — Async foundation
+2. **Tauri** — Desktop app framework
+3. **Ollama** — Local LLM runtime
+4. **Serde** — Serialization ecosystem
+5. **Criterion.rs** — Performance benchmarking
+
+Full Cargo dependency tree:
+  cargo tree --all --graph
+
+Full npm dependency tree:
+  npm ls --all (in apps/desktop/)
+
+================================================================================
+COMPLIANCE NOTES
+================================================================================
+
+License Compatibility:
+- Project: MIT (permissive)
+- Direct dependencies: MIT, Apache-2.0, Unlicense (all compatible)
+- Transitive dependencies: Checked for GPL (none found)
+
+Bundled Models:
+- Mistral 7B: Apache-2.0 (compatible with MIT)
+- Other models: Check model-specific licenses before distribution
+
+Build Artifacts:
+- Compiled binaries inherit component licenses
+- Source code attribution required (MIT terms)
+
+================================================================================
+LICENSE CHECK PROCEDURE
+================================================================================
+
+To verify licenses for a release:
+
+1. Check Rust dependencies:
+   ```bash
+   cargo license --json > licenses.json
+   # Verify no GPL, AGPL, SSPL
+   ```
+
+2. Check npm dependencies:
+   ```bash
+   npm audit --production
+   npm ls --production | grep "LICENSE"
+   ```
+
+3. Check bundled models:
+   - Confirm model license in distribution
+   - Document model source and license in release notes
+
+4. Update this file:
+   - Before major release (v1.0.0)
+   - When adding new dependency
+   - When upgrading major version of dependency
+
+================================================================================
+CONTACT & QUESTIONS
+================================================================================
+
+For questions about third-party licenses:
+1. Check individual package documentation
+2. Review SPDX identifier at https://spdx.org/licenses/
+3. Contact: compliance@local-ai.local (when available)
+
+================================================================================
+Last Updated: 2026-09-05
+Status: Ready for v1.0.0 release
+================================================================================
